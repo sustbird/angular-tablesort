@@ -1,5 +1,14 @@
 AngularJS Tablesort
 ===================
+Customized to work dir-pagination (with https://github.com/michaelbromley/angularUtils/tree/master/src/directives/pagination)
+----------
+dir-pagination specific instructions:
+-------
+1. You need to use tablesort filter like:
+
+```html
+    <tr dir-paginate="ad in ads | tablesort | itemsPerPage: perPage track by ad.adId" ts-repeat>
+```
 
 Allow tables to be sorted by clicking their headings.
 

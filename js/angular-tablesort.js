@@ -158,10 +158,9 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
     return {
         terminal: true,
         multiElement: true,
-        require: "^tsWrapper",
         priority: 1000000,
-        link: function(scope, element, attrs, tsWrapperCtrl) {
-            var repeatAttrs = ["ng-repeat", "data-ng-repeat", "ng-repeat-start", "data-ng-repeat-start"];
+        link: function(scope, element, attrs) {
+            var repeatAttrs = ["dir-paginate", "ng-repeat", "data-ng-repeat", "ng-repeat-start", "data-ng-repeat-start"];
             var ngRepeatDirective = repeatAttrs[0];
             var tsRepeatDirective = "ts-repeat";
             for (i = 0; i < repeatAttrs.length; i++) {
@@ -173,33 +172,29 @@ tableSortModule.directive("tsRepeat", ['$compile', function($compile) {
             }
 
             var repeatExpr = element.attr(ngRepeatDirective);
-            var trackBy = null;
-            var trackByMatch = repeatExpr.match(/\s+track\s+by\s+\S+?\.(\S+)/);
-            if( trackByMatch ) {
-                trackBy = trackByMatch[1];
-                tsWrapperCtrl.setTrackBy(trackBy);
-            }
 
-            if (repeatExpr.search(/tablesort/) != -1) {
-                repeatExpr = repeatExpr.replace(/tablesort/,"tablesortOrderBy:sortFun");
-            } else {
-                repeatExpr = repeatExpr.replace(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/,
-                    "$1 in $2 | tablesortOrderBy:sortFun$3");
-            }
+            if (repeatExpr) {
+                if (repeatExpr.search(/tablesort/) != -1) {
+                    repeatExpr = repeatExpr.replace(/tablesort/, "tablesortOrderBy:sortFun");
+                } else {
+                    repeatExpr = repeatExpr.replace(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(\s+track\s+by\s+[\s\S]+?)?\s*$/,
+                        "$1 in $2 | tablesortOrderBy:sortFun$3");
+                }
 
-            if (angular.isUndefined(attrs.tsHideNoData)) {
-                var noDataRow = angular.element(element[0]).clone();
-                noDataRow.removeAttr(ngRepeatDirective);
-                noDataRow.removeAttr(tsRepeatDirective);
-                noDataRow.addClass("showIfLast");
-                noDataRow.children().remove();
-                noDataRow.append('<td colspan="' + element[0].childElementCount + '"></td>');
-                noDataRow = $compile(noDataRow)(scope);
-                element.parent().prepend(noDataRow);
-            }
+                if (angular.isUndefined(attrs.tsHideNoData)) {
+                    var noDataRow = angular.element(element[0]).clone();
+                    noDataRow.removeAttr(ngRepeatDirective);
+                    noDataRow.removeAttr(tsRepeatDirective);
+                    noDataRow.addClass("showIfLast");
+                    noDataRow.children().remove();
+                    noDataRow.append('<td colspan="' + element[0].childElementCount + '"></td>');
+                    noDataRow = $compile(noDataRow)(scope);
+                    element.parent().prepend(noDataRow);
+                }
 
-            angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
-            $compile(element, null, 1000000)(scope);
+                angular.element(element[0]).attr(ngRepeatDirective, repeatExpr);
+                $compile(element, null, 1000000)(scope);
+            }
         }
     };
 }]);
